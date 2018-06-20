@@ -1,0 +1,266 @@
+\documentclass[a4]{jarticle}
+
+\setlength{\textheight}{\paperheight}   % 紙面縦幅を本文領域にする（BOTTOM=-TOP）
+\setlength{\topmargin}{4.6truemm}       % 上の余白を30mm（=1inch+4.6mm）に
+\addtolength{\topmargin}{-\headheight}  % 
+\addtolength{\topmargin}{-\headsep}     % ヘッダの分だけ本文領域を移動させる
+\addtolength{\textheight}{-60truemm}    % 下の余白も30mm（BOTTOM=-TOPだから+TOP+30mm）
+
+\setlength{\textwidth}{\paperwidth}     % 紙面横幅を本文領域にする（RIGHT=-LEFT）
+\setlength{\oddsidemargin}{-0.4truemm}  % 左の余白を25mm(=1inch-0.4mm)に
+\setlength{\evensidemargin}{-0.4truemm} % 
+\addtolength{\textwidth}{-50truemm}     % 右の余白も25mm（RIGHT=-LEFT）
+
+\usepackage[dvipdfmx]{graphicx}
+\usepackage{listings,jlisting}
+
+\lstset{
+language={C},
+basicstyle={\small},%
+identifierstyle={\small},%
+commentstyle={\small\itshape},%
+keywordstyle={\small\bfseries},%
+ndkeywordstyle={\small},%
+stringstyle={\small\ttfamily},
+frame={tb},
+breaklines=true,
+columns=[l]{fullflexible},%
+numbers=left,%
+xrightmargin=0zw,%
+xleftmargin=3zw,%
+numberstyle={\scriptsize},%
+stepnumber=1,
+numbersep=1zw,%
+lineskip=-0.5ex%
+}
+
+\begin{document}
+\section{はじめに}
+複雑なデータや関数を簡単な関数の和で近似する代表的な手法が「最小二乗法」である。これはコンピュータによるデータの解析の最も重要な基礎である。本授業ではこれを学ぶと共に、ベクトルや行列による線形計算に慣れることを目的とする。
+
+\section{最小二乗法}
+${\sl N}$個のデータ(${\sl x_1,y_1}$),...,(${\sl x_N,y_N}$)に直線を当てはめたいとする。当てはめたい直線を${\sl y = ax + b}$と置く。${\sl a,b}$はこれから定める未知の定数である。
+
+理想的には${\sl y_\alpha = ax_\alpha + b,\alpha = 1,...,N,}$となることが望ましいが、データ点(${\sl x_\alpha,y_\alpha}$)が厳密に同一直線上にあるとは限らないので、${\sl a,b}$をどう選んでも多くの${\sl \alpha}$に対して${\sl y_\alpha \neq ax_\alpha + b}$となる。そこで
+
+\begin{equation}
+y_\alpha \approx ax_\alpha + b,\hspace{10truemm}  \alpha = 1, ... ,N
+\end{equation}
+
+となるように${\sl a,b}$を定める(図1)。記号 $\approx$は「ほぼ等しい」という意味である。これを次のように解釈する。ただし$\to$はその左側の式を最小にすることを表す。
+
+\begin{equation}
+J = \frac{1}{2}\sum_{\alpha = 1}^{N}(y_\alpha - (ax_\alpha + b))^2 \  \to \ min
+\end{equation}
+
+これは食い違いの二乗の和を最小にする方法であることから、{\bf 最小二乗法}と呼ばれている。全体を1/2倍するのはあとの計算を見やすくするためである。
+
+\begin{center}
+\includegraphics[width=12cm]{img26.jpg}
+\end{center}
+
+\subsection{1次の最小二乗法の正規方程式}
+
+\begin{center}
+\fbox{${\sl N}$個のデータ(${\sl x_1,y_1}$),...,(${\sl x_N,y_N}$)に直線${\sl y = ax + b}$を当てはめよ}
+\end{center}
+
+(解)
+
+式(2)は${\sl a,b}$の関数である。解析学で知られるように多変数の関数が最大値や最小値をとる点では、各変数に関する偏導関数が0でなければならない。したがって、
+
+\begin{equation}
+\frac{\partial J}{\partial a} = 0,\hspace{5truemm} \frac{\partial J}{\partial b} = 0
+\end{equation}
+
+を解いて${\sl a,b}$を定めればよい。式(2)を${\sl a,b}$でそれぞれ偏微分すると次式を得る。
+
+\begin{eqnarray}
+\frac{\partial J}{\partial a} = \sum_{\alpha = 1}^{N}(y_\alpha - ax_\alpha - b)(-x_\alpha) = a\sum_{\alpha = 1}^{N}x^2_\alpha + b\sum_{\alpha = 1}^{N}x_\alpha - \sum_{\alpha = 1}^{N}x_\alpha y_\alpha = 0 \nonumber \\
+\frac{\partial J}{\partial b} = \sum_{\alpha = 1}^{N}(y_\alpha - ax_\alpha - b)(-1) = a\sum_{\alpha = 1}^{N}x_\alpha + b\sum_{\alpha = 1}^{N}1 - \sum_{\alpha = 1}^{N}y_\alpha = 0 \hspace{8.5truemm} 
+\end{eqnarray}
+
+これから次の連立1次方程式を得る。
+
+\begin{eqnarray}
+\left(
+\begin{array}{cc}
+\sum_{\alpha = 1}^{N}x^2_\alpha & \sum_{\alpha = 1}^{N}x_\alpha \\
+\sum_{\alpha = 1}^{N}x_\alpha & \sum_{\alpha = 1}^{N}1
+\end{array}
+\right)
+\left(
+\begin{array}{cc}
+a \\
+b
+\end{array}
+\right)
+=
+\left(
+\begin{array}{cc}
+\sum_{\alpha = 1}^{N}x_\alpha y_\alpha \\
+\sum_{\alpha = 1}^{N}y_\alpha
+\end{array}
+\right)
+\end{eqnarray}
+
+これを{\bf 正規方程式}と呼ぶ。これを解いて${\sl a,b}$が定まる。
+
+\subsection{2次の最小二乗法の正規方程式}
+
+\begin{center}
+\fbox{${\sl N}$個のデータ(${\sl x_1,y_1}$),...,(${\sl x_N,y_N}$)に2次式${\sl y = ax^2 + bx +c}$を当てはめよ}
+\end{center}
+
+(解)当てはめる2次式を${\sl y = ax^2 + bx +c}$とし、
+
+\begin{equation}
+y_\alpha \approx ax^2 + bx +c, \hspace{10truemm} \alpha = 1,...,N
+\end{equation}
+
+となる${\sl a,b,c}$を最小二乗法
+
+\begin{equation}
+J = \frac{1}{2}\sum_{\alpha = 1}^{N}(y_\alpha - (ax^2_\alpha + bx + c))^2 \  \to \ min
+\end{equation}
+
+によって定める。それには
+
+\begin{equation}
+\frac{\partial J}{\partial a} = 0,\hspace{5truemm} \frac{\partial J}{\partial b} = 0,\hspace{5truemm}\frac{\partial J}{\partial c} = 0
+\end{equation}
+
+を解いて${\sl a,b,c}$を定めればよい。式(7)を${\sl a,b,c}$でそれぞれ偏微分すると次式を得る。
+
+\begin{eqnarray}
+\frac{\partial J}{\partial a} = \sum_{\alpha = 1}^{N}(y_\alpha - ax^2_\alpha - bx -c)(-x^2_\alpha) = a\sum_{\alpha = 1}^{N}x^4_\alpha + b\sum_{\alpha = 1}^{N}x^3_\alpha + c\sum_{\alpha = 1}^{N}x^2_\alpha - \sum_{\alpha = 1}^{N}x^2_\alpha y_\alpha = 0 \nonumber \\
+\frac{\partial J}{\partial b} = \sum_{\alpha = 1}^{N}(y_\alpha - ax^2_\alpha - bx -c)(-x_\alpha) = a\sum_{\alpha = 1}^{N}x^3_\alpha + b\sum_{\alpha = 1}^{N}x^2_\alpha + c\sum_{\alpha = 1}^{N}x_\alpha - \sum_{\alpha = 1}^{N}x_\alpha y_\alpha = 0 \nonumber \\
+\frac{\partial J}{\partial c} = \sum_{\alpha = 1}^{N}(y_\alpha - ax^2_\alpha - bx -c)(-1) = a\sum_{\alpha = 1}^{N}x^2_\alpha + b\sum_{\alpha = 1}^{N}x_\alpha + c\sum_{\alpha = 1}^{N}1 - \sum_{\alpha = 1}^{N}y_\alpha = 0 \hspace{8.5truemm} 
+\end{eqnarray}
+
+
+これから次の連立1次方程式を得る。
+
+\begin{eqnarray}
+\left(
+\begin{array}{ccc}
+\sum_{\alpha = 1}^{N}x^4_\alpha & \sum_{\alpha = 1}^{N}x^3_\alpha & \sum_{\alpha = 1}^{N}x^2_\alpha\\
+\sum_{\alpha = 1}^{N}x^3_\alpha & \sum_{\alpha = 1}^{N}x^2_\alpha & \sum_{\alpha = 1}^{N}x_\alpha\\
+\sum_{\alpha = 1}^{N}x^2_\alpha & \sum_{\alpha = 1}^{N}x_\alpha & \sum_{\alpha = 1}^{N}1
+\end{array}
+\right)
+\left(
+\begin{array}{ccc}
+a \\
+b \\
+c
+\end{array}
+\right)
+=
+\left(
+\begin{array}{cc}
+\sum_{\alpha = 1}^{N}x^2_\alpha y_\alpha \\
+\sum_{\alpha = 1}^{N}x_\alpha y_\alpha \\
+\sum_{\alpha = 1}^{N}y_\alpha
+\end{array}
+\right)
+\end{eqnarray}
+
+これを解いて、${\sl a,b,c}$が定まる。
+
+\section{演習課題}
+サンプルプログラムとサンプルデータは、/home/class/j4/ohbutsu/lsm/lsm.tar.gzにある。\\
+
+{\bf 問題１}
+
+4点(1,1)(4,3)(2,5)(6,8)に直線を当てはめよ。
+
+(サンプルデータは、example1.datになる。)　\\
+
+{\bf 問題２}
+
+ある実験によると、果実Aの直径$x\mathrm{(cm)}$と水分の含有率$y\mathrm{(\%)}$に次の関係があった。これから直径が$5.7\mathrm{cm}、6.5\mathrm{cm}$の果実の水分の含有率がどのように推定されるか求めよ。
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{l|ccccccccc}
+x & 5.6 & 5.8 & 6.0 & 6.2 & 6.4 & 6.4 & 6.4 & 6.6 & 6.8 \\ \hline
+y & 30 & 26 & 33 & 31 & 33 & 35 & 37 & 36 & 33
+\end{tabular}
+\end{center}
+\end{table}
+(サンプルデータは、example2.datになる。)　\\
+
+
+{\bf 問題３}
+
+makeData.cによって、サンプルデータを生成させ、このデータに直線を当てはめよ。
+
+(サンプルデータは、example3.datになる。)　\\
+
+{\bf 問題４}
+
+サンプルデータexample4.datに1次方程式を当てはめよ。
+
+\section{演習結果}
+
+本演習に使用したソースファイルを以下のソースコード1に示す。
+
+\lstinputlisting[caption=lsm.c,label=lsm]{lsm.c}  
+
+プログラムによって得られた各問題における傾きと切片を以下の表1に示す。
+
+\begin{table}[h]
+\begin{center}
+表1 問題１〜問題4におけるプログラムから得られた傾きと切片の一覧　\\
+\begin{tabular}{|l|c|c|} \hline
+\ & 傾き & 切片　\\ \hline 
+問題1 & 1.067797 & 0.779661 \\ \hline
+問題2 & 6.033835 & -5.011278 \\ \hline
+問題3 & 0.774297 & 0.845697 \\ \hline
+問題4 & 1.166297 & -2.094569 \\ \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+
+{\bf 問題１}
+
+本演習の結果を図1に示す。 \\
+
+\begin{center}
+\includegraphics[width=12cm]{No1.png} \\
+図1 \ 4点における直線データ
+\end{center}
+
+{\bf 問題２}
+
+本演習の結果を図2に示す。
+
+\begin{center}
+\includegraphics[width=12cm]{No2.png} \\
+図2 \ 問題2における直線データ
+\end{center}
+
+グラフより直径が$5.7\mathrm{cm}、6.5\mathrm{cm}$の水分の含有率はグラフの直線において座標軸$5.7\mathrm{cm}$と$6.5\mathrm{cm}$を見ると、
+$5.7\mathrm{cm}$のとき$29\mathrm{\%}$、$6.5\mathrm{cm}$のとき$34\mathrm{\%}$と推定される。\\
+
+{\bf 問題３}
+
+本演習の結果を図3に示す。
+
+\begin{center}
+\includegraphics[width=12cm]{No3.png} \\
+図3 \ サンプルデータにおける直線データ
+\end{center}
+
+{\bf 問題４}
+
+本演習の結果を図4に示す。
+
+\begin{center}
+\includegraphics[width=12cm]{No4.png} \\
+図4 \ サンプルデータexample4.datにおける直線データ
+\end{center}
+
+\end{document}
